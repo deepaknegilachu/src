@@ -1,0 +1,10 @@
+#!/bin/bash
+
+x="$(date '+%d:%b:%y(%a)')"
+if [ ! -d "$XDG_DATA_HOME/Trash/$x" ]; then
+   mkdir -p $XDG_DATA_HOME/Trash/$x
+fi
+
+swayimg -r -e 'mv "%" $XDG_DATA_HOME/Trash/$x ; swaymsg output "eDP-1" bg  $XDG_DATA_HOME/wbg/bg fill ; notify-send "Picture/s has/have removed"' "$1"
+
+mv $(find $XDG_DATA_HOME/Trash -maxdepth 1 -type f) $XDG_DATA_HOME/Trash/$x

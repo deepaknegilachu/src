@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! -d "$XDG_DATA_HOME/wbg" ]; then
+    mkdir -p $XDG_DATA_HOME/wbg
+fi
+
+swayimg -e 'cp "%" $XDG_DATA_HOME/wbg/bg ; pkill wbg ; wbg $XDG_DATA_HOME/wbg/bg & notify-send -i $XDG_DATA_HOME/wbg/bg "Wallpaper has setted"' "$1"
+

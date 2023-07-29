@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ ! -d "$XDG_DATA_HOME/wbg" ]; then 
+   mkdir -p $XDG_DATA_HOME/wbg 
+fi
+
+swayimg -e 'cp "%" $XDG_DATA_HOME/wbg/bg ; swaymsg output "eDP-1" bg  $XDG_DATA_HOME/wbg/bg fill ; notify-send -i $XDG_DATA_HOME/wbg/bg "Wallpaper has setted"' "$1"
