@@ -79,8 +79,8 @@
 
   - authentication file location (generate this src-block with C-c C-v C-t)
 #+begin_src conf :tangle ~/.authinfo
-;;machine imap.gmail.com login www.deepaknegilachu@gmail.com password jbnowfdkvyyltyol port imaps
-;;machine smtp.gmail.com login www.deepaknegilachu@gmail.com password jbnowfdkvyyltyol port 587
+;;machine imap.gmail.com login www.deepaknegilachu@gmail.com password lacsacacsasccscc port imaps
+;;machine smtp.gmail.com login www.deepaknegilachu@gmail.com password lacsacsacsasccsc port 587
 #+end_src
 
 + Newsticker (emacs inbuilt feedreader)
