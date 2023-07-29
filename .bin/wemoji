@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ ! -d "${XDG_DATA_HOME}/emoji" ]; then 
+   mkdir -p "${XDG_DATA_HOME}/emoji" 
+   get_emoji=$(curl -sSL "https://unicode.org/Public/emoji/latest/emoji-test.txt")
+   get_icon=$($TBROWSER  -dump https://forkaweso.me/Fork-Awesome/cheatsheet/ | awk '/fa/ { print $1$2 }')
+   printf '%s\n' "${get_emoji}" | sed -ne 's/^.*; fully-qualified.*# \(\S*\) \S* \(.*$\)/\1 \2/gp' > $XDG_DATA_HOME/emoji/emoji.txt
+   printf '%s\n' "${get_icon}" > $XDG_DATA_HOME/emoji/icon.txt
+fi
+
+x="$(cat $XDG_DATA_HOME/emoji/* | $MENU -l 10 -p 'select emoji: '| awk '{ print $1 }')"
+if [ "$x" ]; then
+echo "$x" | $COPY
+notify-send "'$x' copied to clipboard."
+else
+exit 0
+fi

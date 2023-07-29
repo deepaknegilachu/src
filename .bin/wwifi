@@ -1,0 +1,49 @@
+#!/bin/sh
+
+select_network() {
+if [ ! "$(nmcli -g ssid,in-use device wifi list --rescan yes)" ]; then  
+    notify-send "No Wifi connection found" && exit 0
+else
+    nmcli -g ssid,in-use device wifi list |
+    sed 's/*$/[connected]/' | $MENU -l 10 -p 'Networks:' | 
+    awk -F ':' '{ print $1 }'
+fi
+}
+
+is_connected() {
+    nmcli -g name connection show --active |
+    grep -x "$ssid"
+}
+
+is_saved() {
+    nmcli -g name,type connection |
+    grep "^$ssid:.*wireless\$"
+}
+
+ask_passphrase() {
+    passphrase=$(echo "" | $MENU -p "Password :")
+}
+
+main() {
+    ssid=$(select_network)
+if [ ! "$ssid" ]; then
+    exit 0
+elif is_connected; then
+    $WHEEL nmcli connection down "$ssid"
+    notify-send "Wifi disconnected: $ssid"
+elif is_saved; then
+    $WHEEL nmcli connection up "$ssid"
+    notify-send "Wifi connected: $ssid" 
+else 
+    ask_passphrase
+if [ ! "$passphrase" ]; then
+    exit 0
+else
+    $WHEEL nmcli device wifi connect "$ssid" password "$passphrase" || $WHEEL nmcli device wifi delete "$ssid"
+    notify-send "Wifi passphrase accepted + connection established: $ssid"
+ fi
+fi
+}
+
+main
+

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+entries=" lock\n sleep\n logout\n hibernate\n restart\n powerdown\n cancel"
+
+selected="$(printf "$entries" | $MENU -l 8 -p 'power:' | awk '{ print $2 }')"
+
+case $selected in
+	lock) waylock || swaylock ;;
+	sleep) $WHEEL zzz || systemctl suspend ;;
+	logout) loginctl terminate-user "$USER" ;;
+	hibernate) $WHEEL ZZZ || systemctl hibernate ;;
+	restart) $WHEEL reboot || systemctl reboot ;;
+	powerdown) $WHEEL poweroff || systemctl poweroff;;
+	cancel) exit 1 ;;
+	*) exit 1 ;;
+esac

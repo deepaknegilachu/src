@@ -1,0 +1,12 @@
+#!/bin/sh
+query=$(echo "" | $MENU -p "Youtube:" | tr ' ' '+')
+if [ "$query" ]; then
+	query=$(curl -s "https://www.youtube.com/results?search_query=""$query""&sp=EgIQAQ%253D%253D")
+	vid=$( echo "$query" | grep -Po '(/watch\?v=.{11})|(?<=title":{"runs":\[{"text":").+?(?="}\])' \
+	| paste - - | $MENU -l 15 | cut -f2 || notify-send "Something went wrong..."
+)
+	[ "$vid" ] && $VIDEO "https://youtube.com""$vid"
+else
+	notify-send "No query, closing."
+
+fi

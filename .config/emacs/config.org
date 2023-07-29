@@ -1,0 +1,588 @@
+#+TITLE: GNU Emacs Config
+
+[[~/.config/emacs/splash.png]]
+* Splash screen options
+1) Custom images in splash screen
+2) Custom org file as splash screen
+3) Disable emacs splash screen 
+5) Remove scratch buffer text
+4) Recent files as initial splash screen
+#+begin_src emacs-lisp
+  ;;(setq fancy-splash-image (expand-file-name "splash.png" user-emacs-directory))
+  ;;(setq initial-buffer-choice (expand-file-name "Initial.org" user-emacs-directory))
+  ;;(setq inhibit-startup-message t)
+  ;;(setq initial-scratch-message nil)
+(setq initial-buffer-choice 'recentf-open-files)
+#+end_src
+
+* Gui options
++ Disable scroll bar
++ Disable menu bar
++ Disable tool bar
++ Disable Fringe(line wrap indicator)
++ Enable global-visual-line-mode(also disable fringe)
++ Disable Pointer(cursor) blink
++ Enable only visible bell
++ Disable all bell 
++ Default font for emacs frame
++ Initial flash color
++ Set transparency (need till emacs 28)
+#+begin_src emacs-lisp
+  (scroll-bar-mode -1)				       
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  ;;(fringe-mode -1)
+  (global-visual-line-mode 1)
+  (blink-cursor-mode -1)
+  ;;(setq visible-bell 1)
+  (setq ring-bell-function 'ignore)
+  (add-to-list 'default-frame-alist	   
+	       '(font . "JetBrains Mono 10"))
+  ;;(set-frame-parameter (selected-frame) 'alpha '(90 90))
+  ;;(add-to-list 'default-frame-alist '(alpha 90 90))
+#+end_src
+
+* Built in settings
++ Org-mode heading in imenu
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x m") 'imenu)
+#+end_src
+
++ Viper mode (vim emulation)
+#+begin_src emacs-lisp
+(setq viper-mode t)
+(require 'viper)      
+#+end_src
+
++ Gnus (emacs inbuilt mail client)
+  - require gnutls-bin pkg in debian
+#+begin_src emacs-lisp
+;;    (setq user-mail-address "www.deepaknegilachu@gmail.com"
+;;      user-full-name "Deepak Negi")
+;;
+;;    (setq gnus-select-method
+;;      '(nnimap "gmail"
+;;	       (nnimap-address "imap.gmail.com")  
+;;	       (nnimap-server-port "imaps")
+;;	       (nnimap-stream ssl)))
+;;
+;;    (setq smtpmail-smtp-server "smtp.gmail.com"
+;;     smtpmail-smtp-service 587
+;;     gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+;;
+;;    (setq gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date))
+;;
+;;    (setq gnus-use-cache t)
+;;
+;;    (global-set-key (kbd "C-c e e") 'gnus)
+#+end_src
+
+  - authentication file location (generate this src-block with C-c C-v C-t)
+#+begin_src conf :tangle ~/.authinfo
+;;machine imap.gmail.com login www.deepaknegilachu@gmail.com password jbnowfdkvyyltyol port imaps
+;;machine smtp.gmail.com login www.deepaknegilachu@gmail.com password jbnowfdkvyyltyol port 587
+#+end_src
+
++ Newsticker (emacs inbuilt feedreader)
+#+begin_src emacs-lisp
+;;  (setq newsticker-url-list '(
+;;       ("citizen z" "https://www.youtube.com/feeds/videos.xml?channel_id=UC2MLBAipi69tv2neGMje60g" nil nil nil)
+;;       ("rauf and kaif" "https://www.youtube.com/feeds/videos.xml?channel_id=UCj_ULO_jDdvbzOCsojquneQ" nil nil nil)
+;;       ("round 2 hell" "https://www.youtube.com/feeds/videos.xml?channel_id=UCt4atlExw8aj3Bm79nv1fig" nil nil nil)      
+;;       ("film by kris" "https://www.youtube.com/feeds/videos.xml?channel_id=UCf93fPKwotph47H3_KDcRyg" nil nil nil)      
+;;       ("average linux user" "https://www.youtube.com/feeds/videos.xml?channel_id=UCZiL6BoryLWxyapUuVYW27g" nil nil nil)
+;;       ("mental outlaw" "https://www.youtube.com/feeds/videos.xml?channel_id=UC7YOGHUfC1Tb6E4pudI9STA" nil nil nil)     
+;;       ("carry minati" "https://www.youtube.com/feeds/videos.xml?channel_id=UCj22tfcQrWG7EMEKS0qLeEg" nil nil nil)      
+;;       ("rdebian" "https://www.reddit.com/r/debian/new.rss" nil nil nil)                                                
+;;       ("runixporn" "https://www.reddit.com/r/unixporn/new.rss" nil nil nil)                                            
+;;       ("debian testing new pkgs" "https://packages.debian.org/testing/all/newpkg?format=rss" nil nil nil)              
+;;       ("debian unstable new pkgs" "https://packages.debian.org/unstable/all/newpkg?format=rss" nil nil nil)            
+;;       ("debian security updates" "http://www.debian.org/security/dsa-long" nil nil nil)))
+;;  (global-set-key (kbd "C-c n n") 'newsticker-treeview)
+#+end_src
+
++ Recent file mode enable 
++ Max save option
++ Max items in menu option
++ Recent files open binds
+#+begin_src emacs-lisp
+(recentf-mode 1)				 
+(setq recentf-max-menu-items 15)		 
+(setq recentf-max-saved-items 25)		 
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
+#+end_src
+
++ Highlight current line
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook 'hl-line-mode)
+(add-hook 'text-mode-hook 'hl-line-mode)
+#+end_src
+
++ No of column indicator in modeline 
++ File Size indicator in modeline
++ Battery indicator modeline
++ Time format in modeline
++ Time indicator modeline
+#+begin_src emacs-lisp
+(column-number-mode 1)				 
+(size-indication-mode 1)			 
+(display-battery-mode 1)			 
+(setq display-time-format "%I:%M:%P(%a)%d:%b:%y")
+(display-time-mode 1)				 
+#+end_src
+
++ Isearch match's count
+#+begin_src emacs-lisp
+(setq isearch-lazy-count t)			 
+#+end_src
+
++ Number line type
++ Number line enable
+#+begin_src emacs-lisp
+(setq display-line-numbers-type 'relative)	     
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
+#+end_src
+
++ Change yes or no key to y or n
+#+begin_src emacs-lisp
+(setq use-short-answers t)
+#+end_src
+
++ Calculator binds for emacs's calculator
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-<return>") 'calculator)
+#+end_src
+
++ Spell check enable for text and org files [Linux default is aspell-en as backends]
++ for hunspell example
+#+begin_src emacs-lisp
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'org-mode-hook 'flyspell-mode)
+ ;; (setq ispell-program-name "hunspell")
+ ;; (setq ispell-really-hunspell t)
+#+end_src
+
++ Length of history
++ Enable history of minibuffer 
+#+begin_src emacs-lisp
+(setq history-length 25)
+(savehist-mode 1)
+#+end_src
+
++ Save location of pointer (mouse) in opened files 
+#+begin_src emacs-lisp
+(save-place-mode 1)
+#+end_src
+
++ Don't show org syntax key symbol:- +=+cross+=+ +cross+
++ Org mode document unfolded
++ Enable image support globally
++ Image size globally 
++ Org defaults files
++ Org timer sound
++ Org agenda binds
++ Open Agenda on current split
++ Restore layout after agenda close
++ Org list other sequence
++ Org custom time enable
++ Org custom time format
++ Set custom time for org-mode
++ Org capture defaults files
++ Org capture binds
++ Org orgnotesyncs and binds
++ Org default apps (can use bash_profile variable)
+#+begin_src emacs-lisp
+  (setq org-hide-emphasis-markers t)
+
+  (setq org-startup-folded t)
+
+  (setq org-startup-with-inline-images t)
+
+  (setq org-image-actual-width 400)
+
+  (setq org-agenda-files (list "~/Orgnote"))
+
+  ;;(setq org-clock-sound (expand-file-name "sounds/pomo.wav" user-emacs-directory))
+
+  (global-set-key (kbd "C-c a") 'org-agenda)
+
+  (setq org-agenda-window-setup 'current-window)
+
+  ;;(setq org-agenda-restore-windows-after-quit t)
+
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "|")
+	  (sequence "CURRENT(c)" "WAIT(w)" "|" "CANCLE(x)")
+	  (sequence "|" "DONE(d)")))
+
+  (setq org-display-custom-times t)
+  (setq org-time-stamp-custom-formats '("<%d:%b:%y %a>" . "<%d:%b:%y %a %I:%M%P>"))
+
+  (setq org-capture-templates
+	'(("t" "Timetable" entry (file "~/Orgnote/timetable.org")
+	    "* %?\n")
+	  ("n" "Note" entry (file "~/Orgnote/note.org")
+	   "* %?\n")
+	  ("j" "Journal" entry (file "~/Orgnote/journal.org")
+	   "* %?\n")
+	  ("c" "Contacts" entry (file "~/Orgnote/contacts.org")
+	   "* %?\n")))
+  (global-set-key (kbd "C-c c") 'org-capture)
+
+  (defun orgnotesyncs ()
+   (interactive)
+   (shell-command (expand-file-name "scripts/orgnotesync lnxtotrmx" user-emacs-directory)))
+  (global-set-key (kbd "M-<f4>") 'orgnotesyncs)
+  (defun orgnotesyncr ()                                                                    
+   (interactive)                                                                           
+   (shell-command (expand-file-name "scripts/orgnotesync trmxtolnx" user-emacs-directory)))
+  (global-set-key (kbd "M-<f3>") 'orgnotesyncr)                                             
+
+  (setq org-file-apps
+       (quote
+       ((auto-mode . emacs)
+       ("\\.mm\\'" . default)
+       ("\\.x?html?\\'" . "$BROWSER %s")
+       ("\\.mkv\\'" . "$VIDEO %s")
+       ("\\.mp4\\'" . "$VIDEO %s")
+       ("\\.mp3\\'" . "$VIDEO %s")
+       ("\\.mov\\'" . "$VIDEO %s")
+       ("\\.png\\'" . "$IMAGE %s")
+       ("\\.xopp\\'" . "$ANNONTER %s")
+       ("\\.jpg\\'" . "$IMAGE %s")
+       ("\\.jpeg\\'" . "$IMAGE %s")
+       ("\\.pdf\\'" . "$IMAGE %s"))))
+#+end_src
+
++ Full buffer path in emacs frame
++ Full buffer path in emacs frame with gnu emacs version
++ No title text emacs frame
+#+begin_src emacs-lisp
+(setq frame-title-format '("%f" "%b"))            
+;;(setq frame-title-format                          
+;;     `((buffer-file-name "%f" "%b")               
+;;       ,(format " - GNU Emacs %s" emacs-version)))
+;;(setq frame-title-format nil)
+#+end_src
+
++ Short hand for org syntax (emacs 28.1 inbuilt C-c C-,)
+#+begin_src emacs-lisp
+  ;;(require 'org-tempo)
+#+end_src
+
++ Save desktop buffer across session
+#+begin_src emacs-lisp
+;;(desktop-save-mode 1)
+#+end_src
+
++ Ibuffer keybinds
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x C-b") 'ibuffer-other-window)  
+#+end_src
+
++ Go past and future in term of action
+#+begin_src emacs-lisp
+;;(winner-mode 1)
+#+end_src
+
++ fido (flex + icomplete)
+#+begin_src emacs-lisp
+  (fido-vertical-mode 1)
+#+end_src
+
++ find-file-recursively
+#+begin_src emacs-lisp
+    (defun find-file-recursively ()
+      (interactive)
+      (let* ((files (directory-files-recursively "~" directory-files-no-dot-files-regexp t))
+	     (file (completing-read "Open file: " files ))
+	     (value (find-file file)))
+	(if (listp value)
+		(mapcar 'pop-to-buffer-same-window (nreverse value))
+	  (pop-to-buffer-same-window value))))
+    (global-set-key (kbd "C-x C-a") 'find-file-recursively)
+#+end_src
+
++ Abbrev file
++ Abbrev mode
+#+begin_src emacs-lisp
+(setq abbrev-file-name (expand-file-name "abbrev_defs" user-emacs-directory))
+(add-hook 'org-mode-hook 'abbrev-mode)
+(setq save-abbrevs t)		       
+#+end_src
+
++ Don't pop up UI dialogs when prompting
+#+begin_src emacs-lisp
+(setq use-dialog-box nil)
+#+end_src
+
++ make scripts executable if shebang present
+#+begin_src emacs-lisp
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+#+end_src
+
+* window management
++ Emacs Windows (splits) resize binds
+#+begin_src emacs-lisp
+(global-set-key (kbd "S-C-h") 'shrink-window-horizontally) 
+(global-set-key (kbd "S-C-l") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-j") 'shrink-window)		   
+(global-set-key (kbd "S-C-k") 'enlarge-window)		     
+#+end_src
+
++ Switch focus between emacs windows (splits) binds
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-M-h") 'windmove-left) 
+(global-set-key (kbd "C-M-l") 'windmove-right)
+(global-set-key (kbd "C-M-j") 'windmove-down) 
+(global-set-key (kbd "C-M-k") 'windmove-up)   
+#+end_src
+
++ Swith buffer next and prev
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x C-n") 'next-buffer)
+(global-set-key (kbd "C-x C-p") 'previous-buffer)
+#+end_src
+
++ Make window master
+#+begin_src emacs-lisp
+    (defun zoom ()
+      (interactive)
+      (windmove-right)
+      (windmove-swap-states-left))
+    (global-set-key (kbd "C-M-<return>") 'zoom)
+#+end_src
+
++ Kill current buffer
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x C-k") 'kill-this-buffer)
+#+end_src
+
++ Maximixe a window
+#+begin_src emacs-lisp
+(defun toggle-maximize-window ()
+  "Toggle maximize buffer"
+  (interactive)
+  (if (= 1 (length (window-list)))
+      (progn
+        (set-window-configuration my-saved-window-configuration)
+        (goto-char my-saved-point))
+    (setq my-saved-window-configuration (current-window-configuration)
+          my-saved-point (point))
+    (delete-other-windows)))
+(global-set-key (kbd "M-o") 'toggle-maximize-window)
+#+end_src
+
++ Follow window
+#+begin_src emacs-lisp
+      (defun split-and-follow-horizontally ()
+	(interactive)
+	(split-window-below)
+	(windmove-down))
+      (global-set-key (kbd "M-J") 'split-and-follow-horizontally)
+
+      (defun split-and-follow-vertically ()
+	(interactive)
+	(split-window-right)
+	(windmove-right))
+      (global-set-key (kbd "M-K") 'split-and-follow-vertically)
+#+end_src
+
++ Highlight parens(emacs 28.2 inbuilt)
+#+begin_src emacs-lisp
+;; (show-paren-mode 1)
+#+end_src
+
++ Automatic parenth in emacs config and enable them
+#+begin_src emacs-lisp
+(setq electric-pair-pairs '(
+			     (?\{ . ?\})
+			     (?\( . ?\))
+			     (?\[ . ?\])
+			     (?\" . ?\")
+			     ))
+(add-hook 'prog-mode-hook 'electric-pair-mode)
+#+end_src
+
++ Custom function for screenshot of buffer
+#+begin_src emacs-lisp
+(defun screenshot-svg ()
+  "Save a screenshot of the current frame as an SVG image.
+Saves to a temp file and puts the filename in the kill ring."
+  (interactive)
+  (let* ((filename (format-time-string "~/Pictures/screenshots/%Y-%m-%d-%H-%M-%S.svg"))
+         (data (x-export-frames nil 'svg)))
+    (with-temp-file filename
+      (insert data))
+    (kill-new filename)
+    (message filename)))
+(global-set-key (kbd "C-c s") 'screenshot-svg)
+#+end_src
+
++ Custom location (user-emacs-directory/custom-vars.el) for Package automatic generated file
+#+begin_src emacs-lisp
+  (setq custom-file (expand-file-name "custom-vars.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+#+end_src
+
++ Backup files (edited files)
+#+begin_src emacs-lisp
+(setq backup-directory-alist `(("." . ,(expand-file-name "backup/" user-emacs-directory)))
+    backup-by-copying t    
+    version-control t      
+    delete-old-versions t  
+    kept-new-versions 20   
+    kept-old-versions 5    
+)
+#+end_src
+
++ Window setup at startup
++ mylayout
+#+begin_src emacs-lisp
+  (defun mylayout ()
+    (interactive)
+    (delete-other-windows)
+
+    ;; Open learningarea directory			    
+    (find-file (expand-file-name "~/LearningArea/"))
+
+    ;; Open timetable file
+    (split-window-horizontally 98)	 
+    (windmove-right)
+    (find-file (expand-file-name "~/Orgnote/timetable.org"))
+
+    ;; Open Agenda list
+    (split-window-vertically 25)
+    (windmove-down)
+    (org-agenda nil "a")
+
+    ;; move to left window
+    (windmove-left)
+
+    (window-configuration-to-register ?w)
+    (delete-other-windows))
+    (add-hook 'after-init-hook 'mylayout)
+#+end_src
+
++ Autoreload changes in emacs opened file (when current opened file is modified by external process)
++ Revert Dired and other buffers
+#+begin_src emacs-lisp
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+#+end_src
+
++ Default dictionary
++ Dictionary (dict)
++ Dictionary search and match binds
+#+begin_src emacs-lisp
+;;(setq dictionary-tooltip-dictionary "fd-eng-hin")
+;;(add-hook 'org-mode-hook 'dictionary-tooltip-mode)
+;;(global-set-key (kbd "C-c w") 'dictionary-search)
+#+end_src
+
++ themes
+#+begin_src emacs-lisp
+;;(setq modus-themes-mode-line '(borderless accented))
+;;(setq modus-themes-italic-constructs t)
+;;(global-set-key (kbd "C-x c") 'modus-themes-toggle)
+;;(load-theme 'modus-vivendi)
+#+end_src
+
+* Upcoming inbuilt
++ Language server in c programming
++ Tree sitter mode in c programming
++ Transparent background 
+#+begin_src emacs-lisp
+  ;;(add-hook 'c-mode-hook 'eglot-ensure)
+  ;;(add-hook 'c-mode-hook 'tree-sitter-hl-mode)
+  ;;(set-frame-parameter nil 'alpha-background 70)
+  ;;(add-to-list 'default-frame-alist '(alpha-background . 85))
+ #+end_src
+
+* Non-inbuilt Settings
+** Repository remote location 
+#+begin_src emacs-lisp
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+#+end_src
+
+** Company
+#+begin_src emacs-lisp
+(add-hook 'text-mode-hook 'company-mode)
+(add-hook 'prog-mode-hook 'company-mode)
+(add-hook 'org-mode-hook 'company-mode)
+#+end_src
+
+** Markdowntoorg (require pandoc from debian repo)
+#+begin_src emacs-lisp
+ (defun markdown-convert-buffer-to-org ()
+    "Convert the current buffer's content from markdown to orgmode format and save it with the current buffer's file name but with .org extension."
+    (interactive)
+    (shell-command-on-region (point-min) (point-max)
+                             (format "pandoc -f markdown -t org -o %s"
+                                     (concat (file-name-sans-extension (buffer-file-name)) ".org"))))  
+#+end_src
+
+** Org-superstar
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-superstar-mode)
+#+end_src
+
+** Pdf-tools (require elpa-pdf-tools pkg from debian repo)
+#+begin_src emacs-lisp
+;;(add-hook 'doc-view-mode-hook 'pdf-tools-install) 
+#+end_src
+
+*** Org-noter
+#+begin_src emacs-lisp
+;;(setq org-noter-always-create-frame nil)
+#+end_src
+
+** Emms (require mpg321 from debian repo)
+#+begin_src emacs-lisp
+;;(emms-all)
+;;(setq emms-player-list '(emms-player-mpg321 emms-player-vlc))
+;;(setq emms-source-file-default-directory (expand-file-name "~/Music/"))
+;;(global-set-key (kbd "C-c m m") 'emms)
+;;(global-set-key (kbd "C-c m s") 'emms-stop)
+;;(global-set-key (kbd "<XF86AudioNext>") 'emms-next)
+;;(global-set-key (kbd "<XF86AudioPrev>") 'emms-previous)
+;;(global-set-key (kbd "<XF86AudioPlay>") 'emms-pause)
+#+end_src 
+
+** Doom Modeline
+#+begin_src emacs-lisp
+;;(add-hook 'after-init-hook #'doom-modeline-mode)  
+#+end_src
+** Denote
+#+begin_src emacs-lisp
+;;(setq denote-directory (expand-file-name "~/LearningArea"))
+;;(setq denote-known-keywords '("english" "math" "reasoning" "gk" "main"))
+;;(global-set-key (kbd "C-c d a") 'denote-open-or-create)
+;;(global-set-key (kbd "C-c d l") 'denote-link)
+#+end_src
+
+** Kdeconnect
+#+begin_src emacs-lisp
+;;  (setq kdeconnect-devices "64421cd5_bd78_445c_9f2c_83258643ecb5")
+;;  (setq kdeconnect-active-device "64421cd5_bd78_445c_9f2c_83258643ecb5")
+#+end_src
+** Org pomodoro
+#+begin_src emacs-lisp
+;;  (setq org-pomodoro-length 35)
+;;  (setq org-pomodoro-short-break-length 5)
+;;  (setq org-pomodoro-long-break-length 15)
+;;  (setq alert-default-style 'libnotify)
+;;  (setq org-pomodoro-play-sounds nil)
+;;  (global-set-key (kbd "M-<f11>") 'org-pomodoro)
+#+end_src
+
+** Custom installed
+#+begin_src emacs-lisp
+(add-to-list 'custom-theme-load-path (expand-file-name "custom-installed/everforest-theme" user-emacs-directory))
+(load-theme 'everforest-hard-dark t)
+#+end_src

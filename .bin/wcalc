@@ -1,0 +1,31 @@
+#!/bin/bash
+
+usage() {
+    echo "    $(tput bold)menu calc$(tput sgr0)
+    Basic usage:
+    = 4+2
+    = (4+2)/(4+3)
+    = 4^2
+    = sqrt(4)
+    = c(2)
+    The answer can be used for further calculations
+    The expression may need quotation marks if
+    launched outside of menu"
+    exit
+}
+
+case $1 in
+    -h|--help) usage ;;
+esac
+
+answer=$(echo "$@" | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+action=$(echo -e "Copy to clipboard\nClear\nClose" |
+$MENU -p " $answer")
+
+case $action in
+    "Clear") $0 ;;
+    "Copy to clipboard") echo -n "$answer" | $COPY ; notify-send "Answer copied";;
+    "Close") ;;
+    "") ;;
+    *) $0 "$answer $action" ;;
+esac

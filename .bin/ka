@@ -1,0 +1,2 @@
+#/bin/sh
+kak -c $(kak -l | fzf) "$1"

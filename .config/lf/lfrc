@@ -1,0 +1,340 @@
+#Settings
+set ifs "\n"
+set relativenumber on
+set drawbox on
+set icons on
+set reverse on
+set autoquit on
+set findlen 2
+set sortby ctime
+set info size:time
+set ratios 1:2
+set incsearch
+set scrolloff 4
+set timefmt _2:Jan:2006(Mon)03:04:pm 
+set infotimefmtnew _2:Jan:2006(Mon)03:04:pm 
+set infotimefmtold _2:Jan:2006(Mon)03:04:pm 
+
+cmd toggle_preview %{{
+    if [ "$lf_preview" = "true" ]; then
+        lf -remote "send $id :set nopreview; set ratios 1"
+    else
+        lf -remote "send $id :set ratios 1:2; set preview"
+    fi
+}}
+
+#Plugins
+cmd open &{{
+    case "$f" in
+        *.html) $BROWSER $fx;;
+        *.wav|*.mp3|*.mp4|*.flac|*.m4a|*.mkv|*.webm|*.wma|*.ape|*.ac3|*.og[agx]|*.spx|*.opus) $VIDEO $fx;;
+        *.bmp|*.jpg|*.jpeg|*.png|*.gif|*.xpm|*.webp) $IMAGE $fx;;
+        *.org) $NOTE $fx;;
+        *.pdf) $READER $fx;;
+        *.xopp) $ANNONATER $fx;;
+        *.odt|*.doc|*.docx|*.xls|*.xlsx|*.odp|*.pptx) $OFFICE $fx;; 
+        *) $TERMINAL $EDITOR $fx;;
+      esac
+}}
+
+cmd open-with-gui &{{
+    $@ $fx 
+}}
+
+cmd fzfjump ${{
+  x="$(find . -maxdepth 6 | fzf --layout=reverse --prompt='Search:')"
+  if [ -f "$x" ]; then
+    cmd="select"
+  elif [ -d "$x" ]; then
+    cmd="cd"
+  fi
+  lf -remote "send $id $cmd \"$x\""
+}}
+
+cmd amount ${{
+  if [ ! -d "~/Andriod/mtp" ]; then 
+     mkdir -p ~/Andriod/mtp
+  fi
+  jmtpfs ~/Andriod/mtp && lf -remote "send $id cd ~/Andriod/mtp"
+  lf -remote "send $id reload"
+}}
+
+cmd aumount ${{
+  lf -remote "send $id cd $HOME"  
+  lf -remote "send $id reload" && fusermount -u ~/Andriod/mtp 
+  rm -rf ~/Andriod/mtp
+  
+ }}
+
+cmd smount ${{
+  if [ ! -d "~/Andriod/mtp" ]; then 
+     mkdir -p ~/Andriod/mtp
+  fi
+  sshfs -o follow_symlinks -p 8022 u1_g457$133.444.55.4:~/storage ~/Andriod/mtp 
+  lf -remote "send $id cd ~/Andriod/mtp"
+  lf -remote "send $id reload"
+}}
+
+cmd sumount ${{
+  lf -remote "send $id cd $HOME"  
+  lf -remote "send $id reload" && fusermount -u ~/Andriod/mtp 
+  rm -rf ~/Andriod/mtp
+}}
+
+cmd setwallpaper ${{
+  if [ ! -d "$XDG_DATA_HOME/wbg" ]; then 
+     mkdir -p $XDG_DATA_HOME/wbg
+  fi
+  cp "$f" $XDG_DATA_HOME/wbg/bg
+  swaymsg output "eDP-1" bg $XDG_DATA_HOME/wbg/bg fill
+}}
+
+cmd setwallpaperw ${{
+  if [ ! -d "$XDG_DATA_HOME/wbg" ]; then 
+     mkdir -p $XDG_DATA_HOME/wbg
+  fi
+  cp "$f" $XDG_DATA_HOME/wbg/bg
+  pkill wbg;wbg $XDG_DATA_HOME/wbg/bg >/dev/null 2>&1 & 
+}}
+
+cmd trashtfm ${{
+  x="$(date '+%d:%b:%y(%a)')"
+  if [ ! -d "$XDG_DATA_HOME/Trash/$x" ]; then 
+     mkdir -p $XDG_DATA_HOME/Trash/$x
+  fi
+     rm -rf $XDG_DATA_HOME/Trash/$x/"$(basename "$fx")"
+     mv "$fx" $XDG_DATA_HOME/Trash/$x 
+}}
+
+cmd mkwallresize ${{
+  if [ ! -d "~/Pictures/Wallpapers" ]; then 
+     mkdir -p ~/Pictures/Wallpapers
+  fi
+  a="$(ls ~/Pictures/Wallpapers/ | wc -l)"
+  b="$(echo $(($a+1)))"
+  convert -resize 1366x768 "$f" ~/Pictures/Wallpapers/$b.png
+  x="$(date '+%d:%b:%y(%a)')"
+  if [ ! -d "$XDG_DATA_HOME/Trash/$x" ]; then 
+     mkdir -p $XDG_DATA_HOME/Trash/$x
+  fi
+     rm -rf $XDG_DATA_HOME/Trash/$x/"$(basename "$fx")"
+     mv "$fx" $XDG_DATA_HOME/Trash/$x 
+}}
+
+cmd bulkrename ${{
+    old="$(mktemp)"
+    new="$(mktemp)"
+    if [ -n "$fs" ]; then
+        fs="$(basename -a $fs)"
+    else
+        fs="$(ls)"
+    fi
+    printf '%s\n' "$fs" >"$old"
+    printf '%s\n' "$fs" >"$new"
+    $EDITOR "$new"
+    [ "$(wc -l < "$new")" -ne "$(wc -l < "$old")" ] && exit
+    paste "$old" "$new" | while IFS= read -r names; do
+        src="$(printf '%s' "$names" | cut -f1)"
+        dst="$(printf '%s' "$names" | cut -f2)"
+        if [ "$src" = "$dst" ] || [ -e "$dst" ]; then
+            continue
+        fi
+        mv -- "$src" "$dst"
+    done
+    rm -- "$old" "$new"
+    lf -remote "send $id unselect"
+}}
+
+cmd unarchive ${{
+  case "$f" in
+      *.cbt|*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) tar xvf "$f" ;;
+      *.lzma) unlzma "$f" ;;
+      *.bz2) bunzip2 "$f" ;;
+      *.cbr|*.rar) unrar x -ad "$f" ;;
+      *.gz) gunzip "$f" ;;
+      *.cbz|*.epub|*.zip) unzip "$f" ;;
+      *.z) uncompress "$f" ;;
+      *.7z|*.arj|*.cab|*.cb7|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.pkg|*.rpm|*.udf|*.wim|*.xar) 7z x "$f" ;;
+      *.xz) unxz "$f" ;;
+      *.exe) cabextract "$f" ;;
+      *.cpio) cpio -id < "$f" ;;
+      *.cba|*.ace) unace x "$f" ;;
+      *) echo "Unsupported format" ;;
+  esac
+  lf -remote "send $id reload"
+  x="$(date '+%d:%b:%y(%a)')"
+  if [ ! -d "$XDG_DATA_HOME/Trash/$x" ]; then 
+     mkdir -p $XDG_DATA_HOME/Trash/$x
+  fi 
+     rm -rf $XDG_DATA_HOME/Trash/$x/"$(basename "$fx")"
+     mv "$fx" $XDG_DATA_HOME/Trash/$x 
+}}
+
+cmd mkfile ${{
+  printf "File Name: "
+  read "ans"
+  $EDITOR "$ans"
+}}
+
+cmd mkdir ${{
+  printf "Directory Name: "
+  read "ans"
+  mkdir "$ans"
+}}
+
+cmd chmod ${{
+  chmod +x "$f"
+  lf -remote "send $id reload"
+}}
+
+cmd grep !{{
+   printf "Word Name: "
+   read "ans"
+   cat "$f" | grep "$ans"
+}}
+
+cmd share ${{
+   curl -F"file=@$f" https://0x0.st | $COPY && notify-send "lf" "File uploaded: $PASTE"
+}} 
+
+cmd gadd ${{
+   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME add "$f"
+   printf "git commit message:"
+   read "ans"
+   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME commit -m "$ans"
+}}
+
+cmd gpush ${{
+   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME push origin main
+}}
+
+cmd umount ${{
+   echo "Available devices are: Name Size Lable"
+   x="$(lsblk -ro 'name,type,size,label,mountpoint' | awk '$2 !~ /^disk$/ && NF<=4 { print $1,$3,$4 }' | fzf --layout=reverse | awk -F ' ' '{ print $1 }')"
+   if [ "$x" ]; then
+   mkdir -p $HOME/Andriod/device-$x
+   $WHEEL mount /dev/$x $HOME/Andriod/device-$x -o uid=$(id -u),gid=$(id -g)
+   lf -remote "send $id cd $HOME/Andriod"
+   notify-send "device-$x mounted"
+   else
+   exit 0
+   fi
+}}
+
+cmd uumount ${{
+   lf -remote "send $id cd $HOME" 
+   echo "Which device to umount: Name"
+   x="$(ls $HOME/Andriod | fzf --layout=reverse)"  
+   if [ $x ]; then
+   $WHEEL umount $HOME/Andriod/$x
+   rm -rf $HOME/Andriod/$x
+   lf -remote "send $id reload"
+   notify-send "$x removed"
+   else 
+   exit 0
+   fi
+}}
+
+cmd wheeledit ${{
+    $WHEEL $EDITOR "$f"
+}}
+
+cmd trashclean ${{
+    rm -rf $XDG_DATA_HOME/Trash/*
+}}
+
+cmd lfrcedit ${{
+    $EDITOR $XDG_CONFIG_HOME/lf/lfrc
+    lf -remote "send $id source ~/.config/lf/lfrc"
+}}
+
+map C edit-config
+
+cmd exe ${{
+    "$f"
+}}
+
+cmd space ${{
+    du -h | sort -n -r | less
+}}
+
+cmd insideedit ${{
+   $EDITOR "$f"
+}}
+
+cmd zipmake ${{
+  zip -r "$(basename "$fx")".zip "$(basename "$fx")"
+  x="$(date '+%d:%b:%y(%a)')"
+  if [ ! -d "$XDG_DATA_HOME/Trash/$x" ]; then 
+     mkdir -p $XDG_DATA_HOME/Trash/$x
+  fi
+     rm -rf $XDG_DATA_HOME/Trash/$x/"$(basename "$fx")"
+     mv "$fx" $XDG_DATA_HOME/Trash/$x 
+}}
+
+cmd zipmakeencrypt ${{
+  zip -er "$(basename "$fx")".zip "$(basename "$fx")"
+  x="$(date '+%d:%b:%y(%a)')"
+  if [ ! -d "$XDG_DATA_HOME/Trash/$x" ]; then 
+     mkdir -p $XDG_DATA_HOME/Trash/$x
+  fi 
+     rm -rf $XDG_DATA_HOME/Trash/$x/"$(basename "$fx")"
+     mv "$fx" $XDG_DATA_HOME/Trash/$x 
+}}
+
+cmd pathcopy ${{
+ printf "%s" "$fx" | $COPY
+}}
+
+#Mapping
+map m
+map r
+map zp toggle_preview
+map r rename 
+map b grep
+map .s share
+map <c-f> fzfjump
+map DD trashtfm 
+map TD trashclean
+map .S space
+map e lfrcedit
+map x exe
+map Am amount  
+map Au aumount
+map Um umount
+map Uu uumount
+map Sm smount
+map Su sumount
+map mf mkfile
+map md mkdir
+map X chmod
+map aez zipmakeencrypt	 
+map az zipmake
+map au unarchive
+map R reload
+map W setwallpaper
+map mw setwallpaperw
+map .r mkwallresize
+map o insideedit 
+map br bulkrename
+map g[ gadd  
+map g] gpush 
+map zb $backup
+map sl wheeledit
+map O push open-with-gui<space>
+map Y pathcopy
+
+#bookmarks
+map gc cd ~/.config/
+map gu cd /usr/share/doc/
+map gU cd $HOME/Andriod/
+map gd cd ~/Downloads/
+map gl cd ~/.local/
+map gp cd ~/Pictures/
+map gm cd ~/Music/
+map gsq cd ~/LearningArea/study/questions/
+map gb cd ~/.bin/
+map ge cd /etc/
+map gt cd ~/.local/share/Trash/
+map gr cd /
+

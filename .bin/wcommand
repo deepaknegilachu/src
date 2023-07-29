@@ -1,0 +1,9 @@
+#!/bin/sh
+
+x=$(echo '' | $MENU -p "Timer:") && y=$(echo '' | $MENU -p "Command:")
+if [ "$x" ] && [ "$y" ];then 
+sleep $xm; notify-send -u critical  "time up $xm"&& $y 
+else
+exit 0
+fi
+

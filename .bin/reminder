@@ -1,0 +1,4 @@
+#!/bin/sh
+export DISPLAY=:0
+remind -z -k "notify-send 'Remind' '%s'" $XDG_DATA_HOME/remind/reminders.rem 
+

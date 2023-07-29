@@ -1,0 +1,9 @@
+#!/bin/sh
+
+x=$(echo '' | $MENU -p "Timer in second:")
+if [ "$x" ];then 
+sleep $x;notify-send -u critical  "times up $xm"
+else
+exit 0
+fi
+

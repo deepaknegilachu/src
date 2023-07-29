@@ -1,0 +1,37 @@
+#!/bin/sh
+
+link=$($PASTE)
+
+chosen=$(echo "play\naudio-dl\nvideo-dl\nfindytchannelid" | $MENU -l 4 -p "Video:")
+
+case "$chosen" in
+	play)
+	$VIDEO $link
+        notify-send "Wait for video"
+	exit 1
+;;
+	audio-dl)
+        notify-send "You will be notified when download is completed"
+        if [ ! -d "~/Downloads" ]; then 
+           mkdir -p ~/Downloads
+        fi
+	yt-dlp  $link --extract-audio --audio-format mp3 -o "~/Downloads/%(title)s.%(ext)s" 
+        notify-send "Your audio is downloaded"
+        
+	exit 1
+;;
+	video-dl)
+        if [ ! -d "~/Downloads" ]; then 
+           mkdir -p ~/Downloads
+        fi
+        notify-send "You will be notified when download is completed"
+        yt-dlp $link -o "~/Downloads/%(title)s.%(ext)s"
+        notify-send "Your video is downloaded"
+	exit 1
+;;
+	findytchannelid)
+        curl -s $link | grep -o "channel_id=.*" | sed 's/".*//g' | $COPY
+        notify-send "Link has copied on clipboard"
+	exit 1
+;;
+esac

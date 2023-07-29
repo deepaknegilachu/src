@@ -1,0 +1,13 @@
+font=JetBrains Mono 10
+on-notify=exec aplay $XDG_DATA_HOME/sounds/sneeze.wav
+
+background-color=#2e3440
+text-color=#a3be8c
+height=700
+width=300
+
+default-timeout=10000
+
+border-radius=5
+border-size=1
+border-color=#a3be8c

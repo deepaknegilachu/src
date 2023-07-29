@@ -1,0 +1,62 @@
+#!/bin/sh
+
+password() {
+target=$(ls ${XDG_DATA_HOME}/password-store  | sed 's/.gpg$//g' | $MENU -l 10 -p 'Choose Password:')
+if [ "$target" ]; then
+#$COPY $(pass $target)
+pass -c $target 
+notify-send -u critical -t 45000 "$target's password is currently in your clipboard."
+#sleep 45
+#$COPY "[redacted]"
+else 
+exit 0
+fi
+}
+
+login() {
+target=$(ls ${XDG_DATA_HOME}/password-store  | sed 's/.gpg$//g' | $MENU -l 10 -p 'Choose Password:')
+if [ "$target" ]; then
+#$COPY $(pass $target)
+pass -c2 $target
+notify-send -u critical -t 45000 "$target's login is currently in your clipboard."
+#sleep 45
+#$COPY "[redacted]"
+else 
+exit 0
+fi
+}
+
+url() {
+target=$(ls ${XDG_DATA_HOME}/password-store  | sed 's/.gpg$//g' | $MENU -l 10 -p 'Choose Password:')
+if [ "$target" ]; then
+#$COPY $(pass $target)
+pass -c3 $target
+$BROWSER $($PASTE)
+notify-send -u critical -t 45000 "$target' url opening."
+#sleep 45
+#$COPY "[redacted]"
+else 
+exit 0
+fi
+}
+
+usage() {
+    echo "    $(tput bold)Use wpass with argument:$(tput sgr0)
+    Basic usage: 
+    wpass copypassword:- copy password to clipboard
+    wpass copylogin:- copy login to clipboard 
+    wpass copyurl:- open url in default browser" 
+    exit 0
+}
+
+entries="copypassword\ncopylogin\ncopyurl\ncancel"
+
+selected="$(printf "$entries" | $MENU -l 4 -p 'Pass get what:')"
+
+case "$selected" in
+    copypassword) password;;
+    copylogin) login;;
+    copyurl) url;;
+    cancel) exit 0;;
+    *) exit usage;;
+esac

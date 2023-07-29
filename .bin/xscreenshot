@@ -1,0 +1,31 @@
+#!/bin/sh
+
+mkdir -p ~/Pictures/screenshots
+
+scwhole() {
+scrot ~/Pictures/screenshots/sc-$(date '+%d:%b:%y(%a)%I:%M:%S:%P').png && notify-send 'fullscreen captured'
+}
+
+scshare() {
+scrot -s | curl --form 'file=@-' http://0x0.st | $copy && notify-send 'screenshot uploaded & url copied to clipboard'
+}
+
+scselect() {
+scrot -s ~/Pictures/screenshots/sc-$(date '+%d:%b:%y(%a)%I:%M:%S:%P').png && notify-send 'selected captured'
+}
+
+usage() {
+    echo "    $(tput bold)Use xscreenshot with argument:$(tput sgr0)
+    Basic usage: 
+    xscreenshot scwhole:- fullscreen capturing
+    xscreenshot scshare:- copy image as url for sharing 
+    xscreenshot scselect:- selection capturing" 
+    exit 0
+}
+
+case $1 in
+    scwhole) scwhole;;
+    scshare) scshare;;
+    scselect) scselect;;
+    *) usage;;
+esac

@@ -1,0 +1,28 @@
+# Global values
+min-width=300
+max-width=500
+max-height=300
+anchor=top-right
+edge-margin-vertical=5
+edge-margin-horizontal=5
+play-sound=aplay $XDG_DATA_HOME/sounds/sneeze.wav
+
+# Default values, may be overridden in 'urgency' specific sections
+background=002b36BF
+border-color=859900BF
+border-size=1
+title-font=JetBrains:size=11
+title-color=859900BF
+summary-font=JetBrains Mono:size=11
+summary-color=859900BF
+body-font=JetBrains Mono:size=9
+body-color=859900BF
+max-timeout=4
+
+[normal]
+title-color=859900BF
+border-color=859900BF
+
+[critical]
+title-color=dc322fBF
+border-color=dc322fBF

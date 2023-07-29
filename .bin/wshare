@@ -1,0 +1,9 @@
+#!/bin/sh
+
+file=$(find $HOME/.bin/ -type f | $MENU -i -l 25)
+if [ "$file" ]; then
+curl -F "file=@$file" https://0x0.st/ | $COPY
+notify-send "Your file $file "
+else
+exit 0
+fi

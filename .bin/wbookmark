@@ -1,0 +1,86 @@
+#!/bin/sh
+
+database="${XDG_DATA_HOME}/bookmarks/bookmarks.txt"
+
+if [ ! -d "${XDG_DATA_HOME}/bookmarks" ]; then 
+   mkdir -p "${XDG_DATA_HOME}/bookmarks" && touch "$database"
+fi
+
+add() {
+addbyclip() {
+y="$($PASTE)"
+if grep -q "$y$" "$database"; then
+   notify-send "Bookmark already exists $y"
+else
+x=$(echo '' | $MENU -p 'Name for bookmark:')
+  if [ "$x" ]  && [ "$y" ]; then
+      echo "[$x]-->$y" >> "$database"
+      notify-send -u normal  "$y Bookmark Added"
+    else
+   exit 0
+  fi
+fi
+   }
+
+addbytyping() {
+x=$(echo '' | $MENU -p 'Name for bookmark:')
+  if [ "$x" ]; then 
+y="$(echo '' | $MENU -p 'Type the url:')"
+  else
+exit 0
+  fi
+  if [ "$x" ]  && [ "$y" ]; then
+      echo "[$x]-->$y" >> "$database"
+      notify-send -u normal  "$y Bookmark Added"
+     else
+   exit 0
+fi
+  }
+
+entries="addbyclip\naddbytyping\ncancel"
+
+selected="$(printf "$entries" | $MENU -l 3 -p 'Way of adding bookmark')"
+
+case "$selected" in
+    addbyclip) addbyclip;;
+    addbytyping) addbytyping;;
+    *) exit 0;;
+esac
+
+}
+
+sel() {
+x="$(cat -n "$database" | $MENU -l 10 -p 'Select a bookmark'| awk -F '-->' '{ print $2 }')"
+if [ "$x" ]; then
+   $BROWSER $x
+   notify-send "$(x) Bookmark opening"
+else
+   exit 0
+fi
+}
+
+del() {
+x="$(cat -n "$database" | $MENU -l 10 -p 'Delete a bookmark'| awk '{ print $1  }')"
+if [ "$x" ]; then
+   sed -i ""$x"d" "$database"
+   notify-send "$x Bookmark deleted"
+else
+   exit 0
+fi
+}
+
+usage() {
+    echo "    $(tput bold)Use wbookmark with argument:$(tput sgr0)
+    Basic usage: 
+    wbookmark add:- for adding and then select way of adding
+    wbookmark sel:- for selecting 
+    wbookmark del:- for deleting" 
+    exit 0
+}
+
+case $1 in
+    add) add;;
+    sel) sel;;
+    del) del;;
+    *) usage;;
+esac

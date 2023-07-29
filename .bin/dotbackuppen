@@ -1,0 +1,14 @@
+#!/bin/sh
+
+lnxtopen(){
+rsync -a --delete -e ~/.*  ~/Andriod/device-sdb1/dotbackup && notify-send "Dotbackup completed"
+}
+
+pentolnx(){
+rsync -a --delete -e 'ssh -p 8022' u0_a119@192.168.43.1:~/storage/external-1/lnxhome/.* ~/ && notify-send "DotBackup recovered"
+}
+
+case $1 in 
+    lnxtopen) lnxtopen;;
+    pentolnx) pentolnx;;
+esac

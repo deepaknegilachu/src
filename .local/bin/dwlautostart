@@ -1,0 +1,8 @@
+#!/bin/sh
+someblocks -s /run/user/1000/dwl-bar-0 &
+wbg ~/.local/share/wbg/bg &
+mako &
+wlsunset -l 30.1 -L 78.9 -t 2400 -T 4001 &
+foot --server &
+aplay ~/.local/share/sounds/startup.wav &
+

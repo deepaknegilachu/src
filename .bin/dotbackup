@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lnxtotrmx(){
+rsync -a --delete -e 'ssh -p 8022' ~/.*  u0_a119@192.168.43.1:~/storage/external-1/lnxdotfiles && notify-send "Dotbackup completed"
+}
+
+trmxtolnx(){
+rsync -a --delete -e 'ssh -p 8022' u0_a119@192.168.43.1:~/storage/external-1/lnxdotfiles/.* ~/ && notify-send "DotBackup recovered"
+}
+
+case $1 in 
+    lnxtotrmx) lnxtotrmx;;
+    trmxtolnx) trmxtolnx;;
+esac
+
+

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+[ -d /sys/class/power_supply/BAT* ] || exit 0
+
+batdir="/sys/class/power_supply/BAT*"
+minpercent=15
+maxpercent=95
+criticalpercent=10
+export DISPLAY=:0
+case "$(cat /proc/1/comm)" in
+	systemd) powercommand="systemctl suspend" ;;
+	runit) powercommand="$WHEEL zzz" ;;
+        *) exit 0 ;;
+esac
+
+        batstatus="$(cat $batdir/status)"
+        batpercent="$(cat $batdir/capacity)"
+
+      if   [ "$batstatus" = "Discharging" -a "$batpercent" -le "$criticalpercent" ] ; then
+		notify-send -u critical "Critical battery!: Now this machine about to suspend $batpercent%"
+	         
+          sleep 10 && batstatus="$(cat $batdir/status)"
+          [ $batstatus != "Charging" ] && $powercommand || exit 0
+
+      elif [ "$batstatus" = "Discharging" -a "$batpercent" -le "$minpercent" ] ; then
+		notify-send -u critical "Low battery!: $batpercent%"
+		
+      elif [ "$batstatus" = "Charging" -a "$batpercent" -gt "$maxpercent" ] ; then
+	        notify-send -u normal "Battery almost full: Unplug power cord $batpercent%"
+      
+      elif [ "$batstatus" = "Full" ]; then
+                notify-send -u normal "Battery is fully charged: Please unplug power cord $batpercent%"
+      fi

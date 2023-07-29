@@ -1,0 +1,31 @@
+#!/bin/sh
+
+mkdir -P ~/Pictures/screenshots
+
+scwhole() {
+grim ~/Pictures/screenshots/sc-$(date '+%d:%b:%y(%a)%I:%M:%S:%P').png && notify-send 'fullscreen captured'
+}
+
+scshare() {
+slurp | grim -g - - | curl --form 'file=@-' http://0x0.st | $copy && notify-send 'screenshot uploaded & url copied to clipboard'
+}
+
+scselect() {
+grim -g "$(slurp)" ~/Pictures/screenshots/sc-$(date '+%d:%b:%y(%a)%I:%M:%S:%P').png && notify-send 'selected captured'
+}
+
+usage() {
+    echo "    $(tput bold)Use wscreenshot with argument:$(tput sgr0)
+    Basic usage: 
+    wscreenshot scwhole:- fullscreen capturing
+    wscreenshot scshare:- copy image as url for sharing 
+    wscreenshot scselect:- selection capturing" 
+    exit 0
+}
+
+case $1 in
+    scwhole) scwhole;;
+    scshare) scshare;;
+    scselect) scselect;;
+    *) usage;;
+esac

@@ -1,0 +1,12 @@
+#/bin/sh
+
+link=$($PASTE)
+check=$(echo $link | grep https)
+if [ "$check" ]; then
+notify-send "download started"
+aria2c $link
+else 
+notify-send "This is not a link please copy a link"
+exit 0
+fi
+
